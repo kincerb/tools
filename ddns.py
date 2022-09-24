@@ -4,7 +4,6 @@ import logging
 import logging.config
 import logging.handlers
 from ipaddress import IPv4Address
-from pathlib import Path
 
 import requests
 
@@ -14,12 +13,35 @@ def main():
     configure_logging(verbosity=args.verbosity)
 
 
-def get_current_ip(url: str = "https://domains.google.com/checkip") -> IPv4Address:
+def get_local_ip(url: str = "https://domains.google.com/checkip") -> IPv4Address:
+    """Return the current IP seen from the outside.
+
+    Args:
+        url (str):
+            URL to use that returns the IP from the client
+            Default: "https://domains.google.com/checkip"
+
+    Returns:
+        ipaddress (IPv4Address)
+    """
     try:
         resp = requests.get(url)
     except Exception:
-        return
+        raise
     return IPv4Address(resp.content.decode())
+
+
+def get_domain_ip(domain: str = "int.nucoder.io") -> IPv4Address:
+    """Return the current IP that the domain resolves to.
+
+    Args:
+        domain (str):
+            Domain to resolve and return
+            Default ("int.nucoder.io")
+    Returns:
+        ipaddress (IPv4Address)
+    """
+    return IPv4Address("127.0.0.1")
 
 
 def get_args() -> argparse.Namespace:
@@ -72,3 +94,4 @@ def configure_logging(verbosity: int = 0) -> None:
 
 if __name__ == "__main__":
     main()
+# vim:ts=4 sw=4 sts=4
